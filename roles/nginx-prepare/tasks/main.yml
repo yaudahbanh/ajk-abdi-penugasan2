@@ -1,0 +1,37 @@
+---
+# tasks file for nginx-prepare
+- name: Install Nginx
+  apt:
+    name:
+      - nginx
+    state: present
+  become: true
+  notify:
+    - Restart Nginx
+    - Enable Nginx
+
+- name: Enable nginx to start automatically
+  service:
+    name: nginx
+    enabled: yes
+  become: true
+  notify: Restart Nginx
+
+- name: Disable default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  become: true
+  notify: Restart Nginx
+
+- name: Enable UFW
+  become: true
+  community.general.ufw:
+    state: enabled
+
+
+- name: Generate nginx config
+  template:
+    src: nginx-conf.j2
+    dest: /etc/nginx/conf.d/ansible.conf
+  notify: Reload Nginx
