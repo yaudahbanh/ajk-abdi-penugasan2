@@ -32,6 +32,6 @@
 
 - name: Generate nginx config
   template:
-    src: nginx-conf.j2
+    src: templates/nginx-config.j2
     dest: /etc/nginx/conf.d/ansible.conf
   notify: Reload Nginx
