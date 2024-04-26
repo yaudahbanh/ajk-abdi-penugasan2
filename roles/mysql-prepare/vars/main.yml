@@ -1,2 +1,5 @@
 ---
 # vars file for mysql-prepare
+db_name: bima
+db_user: bima_secret
+db_password: bima_anak_kecil_157
