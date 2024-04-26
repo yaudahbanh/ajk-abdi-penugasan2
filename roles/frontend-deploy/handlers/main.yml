@@ -1,0 +1,6 @@
+---
+# handlers file for frontend-deploy
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded

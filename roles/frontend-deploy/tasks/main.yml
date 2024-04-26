@@ -1,0 +1,46 @@
+---
+# tasks file for frontend-deploy
+
+- name: Generate nginx site config
+  template:
+    src: nginx-frontend.j2
+    dest: /etc/nginx/sites-available/frontend
+  notify: Reload Nginx
+
+- name: Enable frontend site
+  file:
+    src: /etc/nginx/sites-available/frontend
+    dest: /etc/nginx/sites-enabled/frontend
+    state: link
+  notify: Reload Nginx
+
+- name: Check nginx configuration
+  command: nginx -t
+  register: resultnginx
+
+- name: Show nginx result
+  debug:
+    msg: "{{ resultnginx }}"
+  when: resultnginx.stdout.find('successful') == -1
+
+- name: Start frontend
+  shell: bash -c "source ~/.nvm/nvm.sh && yarn start &"
+  args:
+    chdir: /var/www/frontend
+  register: resultstart
+
+- name: Show start results
+  debug:
+    var: resultstart.stdout_lines
+  
+- name: Test frontend with curl
+  uri:
+    url: http://localhost:3000
+    method: GET
+    return_content: yes
+  register: result
+
+- name: Show results
+  debug:
+    var: result.content
+   

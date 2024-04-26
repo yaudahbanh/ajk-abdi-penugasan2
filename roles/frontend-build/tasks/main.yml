@@ -1,2 +1,77 @@
 ---
 # tasks file for frontend-build
+
+- name: Install NVM
+  shell: |
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc
+    echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion' >> ~/.bashrc
+
+- name: Source nvm
+  shell: bash -c ". ~/.bashrc"
+
+- name: Install Node.js version 18
+  shell: |
+    bash -c "source ~/.nvm/nvm.sh && nvm install 18"
+
+- name: Set Node.js version 18 as default
+  shell: bash -c "source ~/.nvm/nvm.sh && nvm alias default 18"
+
+- name: Set Node.js version 18 as default
+  shell: bash -c "source ~/.nvm/nvm.sh && node -v"
+  register: resultdependencies
+
+- name: Show dependencies
+  debug:
+    var: resultdependencies.stdout_lines
+
+- name: Change ownership
+  file:
+    path: /var/www/frontend
+    owner: www-data
+    group: www-data
+    recurse: yes
+
+- name: Install yarn
+  shell: bash -c "source ~/.nvm/nvm.sh && npm install -g yarn"
+
+- name: Add safe directory for Git
+  community.general.git_config:
+    name: safe.directory
+    value: /var/www/frontend
+    state: present
+    scope: global
+
+- name: Clone from repo
+  git:
+    repo: https://github.com/elshiraphine/fe-todo
+    dest: /var/www/frontend
+    clone: yes
+    force: yes
+    update: yes
+
+- name: Remove package-lock.json
+  file:
+    path: /var/www/frontend/package-lock.json
+    state: absent
+
+- name: Install yarn packages
+  shell: bash -c "source ~/.nvm/nvm.sh && yarn install"
+  args:
+    chdir: /var/www/frontend
+  register: resultinstall
+
+- name: Show install results
+  debug:
+    var: resultinstall.stdout_lines
+
+- name: Build frontend
+  shell: bash -c "source ~/.nvm/nvm.sh && yarn build"
+  args:
+    chdir: /var/www/frontend
+  register: resultbuild
+
+- name: Show build results
+  debug:
+    var: resultbuild.stdout_lines
