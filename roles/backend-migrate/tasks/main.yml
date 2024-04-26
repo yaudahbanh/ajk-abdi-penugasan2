@@ -1,0 +1,30 @@
+---
+# tasks file for backend-migrate
+name: Copy env
+  become: true
+  copy:
+    src: templates/env-template
+    dest: /var/www/be-todo/.env
+
+- name: Configure Laravel database
+  template:
+    src: templates/env-template
+    dest: /var/www/be-todo/.env
+  vars:
+    db_name: 'bima'
+    db_user: 'bima_secret'
+    db_password: bima_anak_kecil_157
+
+- name: Run composer dump-autoload
+  community.general.composer:
+    command: dump-autoload
+    working_dir: /var/www/be-todo
+  become: true
+  become_user: root
+  environment:
+      COMPOSER_ALLOW_SUPERUSER: "1"
+
+- name: Generate App Key 2
+  command:
+    cmd: "php artisan migrate"
+    chdir: "/var/www/be-todo"
