@@ -5,5 +5,5 @@
   #   - env/vars.yml
 
   roles:
-    # - roles/backend-build
+    - roles/backend-build
     - roles/frontend-build

@@ -29,6 +29,12 @@
   community.general.ufw:
     state: enabled
 
+- name: Enable port 8000
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: 8000
+
 
 - name: Generate nginx config
   template:
