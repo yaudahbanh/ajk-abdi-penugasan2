@@ -12,7 +12,13 @@
     dest: /etc/nginx/sites-enabled/backend
     state: link
   become: true
-  notify: Restart NGINX
+  notify: Restart Nginx
+
+- name: start php-fpm
+  shell: "./php8.1-fpm start"
+  become: yes
+  args:
+    chdir: /etc/init.d/
 
 - name: Curl result
   uri:

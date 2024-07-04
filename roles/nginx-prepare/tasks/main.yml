@@ -33,11 +33,11 @@
   become: true
   community.general.ufw:
     rule: allow
-    port: 8000
+    port: '8000'
 
 
-- name: Generate nginx config
-  template:
-    src: templates/nginx-config.j2
-    dest: /etc/nginx/conf.d/ansible.conf
-  notify: Reload Nginx
+# - name: Generate nginx config
+#   template:
+#     src: templates/nginx-config.j2
+#     dest: /etc/nginx/conf.d/ansible.conf
+#   notify: Reload Nginx
